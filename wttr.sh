@@ -10,10 +10,14 @@ if [ -n "$1" ]; then
         if [ "$(which curl 2>/dev/null)" ]; then
             CITY="$(curl -s ipinfo.io/city)"
             echo "Weather of $1"
+			# blank line (try without)
+			echo " "
             curl -s "wttr.in/$1?Q0"
         elif [ "$(which wget 2>/dev/null)" ]; then
             CITY="$(wget -qO- ipinfo.io/city)"
             echo "Weather of $1"
+			# blank line (try without)
+			echo " "
             wget -qO- "wttr.in/$1?Q0"
         fi
         echo
@@ -28,10 +32,14 @@ else
         if [ "$(which curl 2>/dev/null)" ]; then
             CITY="$(curl -s ipinfo.io/city)"
             echo "Weather of $CITY"
+			# blank line (try without)
+			echo " "
             curl -s "wttr.in/$CITY?Q0"
         elif [ "$(which wget 2>/dev/null)" ]; then
             CITY="$(wget -qO- ipinfo.io/city)"
             echo "Weather of $CITY"
+			# blank line (try without)
+			echo " "
             wget -qO- "wttr.in/$CITY?Q0"
         fi
         echo
