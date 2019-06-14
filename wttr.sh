@@ -1,24 +1,52 @@
 #!/usr/bin/env bash
 #
-# wttr.sh uses wttr.in's api
-# Jus de Patate (yaume@ntymail.com) - CC-BY-NC
-# Version 1.2
+# wttr.sh uses wttr.in's+ipinfo.io's api
+# Jus de Patate (yaume@ntymail.com) - BSD-2
+# Version 1.3
 
-if [ -n "$1" ]; then
+args="$(echo "$*" | tr " " +)"
+wa="Q0"
+# Arguments for wttr.in
+# http://wttr.in/:help
+
+if [ "$(which curl 2>/dev/null)" ]; then
+    if [ "$(ping -c 1 ipinfo.io)" ]; then
+       CITY=$(curl -s ipinfo.io/city)
+       REGION=$(curl -s ipinfo.io/region)
+    else
+       echo "Cannot connect to ipinfo.io"
+       exit 1
+    fi
+elif [ "$(which wget 2>/dev/null)" ]; then
+    if [ "$(ping -c 1 wttr.in)" ]; then
+       CITY=$(wget -qO- ipinfo.io/city)
+       REGION=$(wget -qO- ipinfo.io/region)
+    else
+       echo "can't connect to ipinfo.io"
+    fi
+else
+    echo "Install cURL or wget please"
+    exit 1
+fi
+
+if [ "$CITY" = "" ]; then
+# some times ipinfo.io gives no city
+   CITY=$REGION
+fi
+
+if [ -n "$args" ]; then
     # get city from first argument
     if [ "$(ping -c 1 wttr.in)" ]; then
         if [ "$(which curl 2>/dev/null)" ]; then
-            CITY="$(curl -s ipinfo.io/city)"
-            echo "Weather of $1"
-			# blank line (try without)
+            echo "Weather of $*"
+			# blank line
 			echo " "
-            curl -s "wttr.in/$1?Q0"
+            curl -s "wttr.in/$args?$wa"
         elif [ "$(which wget 2>/dev/null)" ]; then
-            CITY="$(wget -qO- ipinfo.io/city)"
-            echo "Weather of $1"
-			# blank line (try without)
-			echo " "
-            wget -qO- "wttr.in/$1?Q0"
+            echo "Weather of $*"
+			      # blank line
+	      		echo " "
+            wget -qO- "wttr.in/$args?$wa"
         fi
         echo
     else
@@ -30,17 +58,15 @@ else
     # no city set in first argument
     if [ "$(ping -c 1 wttr.in)" ]; then
         if [ "$(which curl 2>/dev/null)" ]; then
-            CITY="$(curl -s ipinfo.io/city)"
             echo "Weather of $CITY"
-			# blank line (try without)
+			# blank line
 			echo " "
-            curl -s "wttr.in/$CITY?Q0"
+            curl -s "wttr.in/$args?wa"
         elif [ "$(which wget 2>/dev/null)" ]; then
-            CITY="$(wget -qO- ipinfo.io/city)"
             echo "Weather of $CITY"
 			# blank line (try without)
 			echo " "
-            wget -qO- "wttr.in/$CITY?Q0"
+            wget -qO- "wttr.in/$args?wa"
         fi
         echo
     else
